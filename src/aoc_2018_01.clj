@@ -19,13 +19,6 @@
   [strings]
   (str/split strings #"(\n)|(, )"))
 
-(defn sum-strings
-  [strings]
-  (->> strings
-       (split)
-       (map parse-int)
-       (reduce +)))
-
 (defn last-element-plus-nth-integer
   [elements integers index]
   (+ (or (last elements) 0) (nth integers index)))
@@ -43,8 +36,10 @@
 
 
 (comment
-  (-> (get-file "2018_01_input.txt")
-      (sum-strings))
+  (->> (get-file "2018_01_input.txt")
+      (split)
+      (map parse-int)
+      (reduce +))
   (->> (get-file "2018_01_input.txt")
        (split)
        (map string-to-integer)
