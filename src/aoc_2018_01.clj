@@ -9,36 +9,34 @@
   (->> filename
        (str "file/")
        (io/resource)
-       (slurp))
-  )
+       (slurp)))
+
 
 (defn parse-int [s]
-  (Integer. (re-find  #"\d+" s )))
+  (Integer. (re-find #"\d+" s)))
 
 (defn string-to-integer
   [string]
   (if (= (first string) \-)
     (* (parse-int (subs string 1)) -1)
-    (parse-int (subs string 1))
-    )
-  )
+    (parse-int (subs string 1))))
+
+
 
 (defn split
   [strings]
-  (str/split strings #"(\n)|(, )")
-  )
+  (str/split strings #"(\n)|(, )"))
 
 (defn sum-strings
   [strings]
   (->> strings
        (split)
        (map string-to-integer)
-       (reduce +))
-  )
+       (reduce +)))
 
 (defn last-element-plus-nth-integer
   [elements integers index]
-  (+ (or (last elements) 0) (nth integers index) ))
+  (+ (or (last elements) 0) (nth integers index)))
 
 (defn accumulation-reached-again-first
   [accumulations index integers]
@@ -48,14 +46,13 @@
       (recur
         (conj accumulations value-added)
         (rem (+ index 1) (count integers))
-        integers)
-      )
-    )
-  )
+        integers))))
+
+
 
 (comment
   (-> (get-file "2018_01_input.txt")
-       (sum-strings))
+      (sum-strings))
   (->> (get-file "2018_01_input.txt")
        (split)
        (map string-to-integer)
