@@ -11,17 +11,9 @@
        (io/resource)
        (slurp)))
 
-
-(defn parse-int [s]
-  (Integer. (re-find #"\d+" s)))
-
-(defn string-to-integer
+(defn parse-int
   [string]
-  (if (= (first string) \-)
-    (* (parse-int (subs string 1)) -1)
-    (parse-int (subs string 1))))
-
-
+  (Integer/parseInt string))
 
 (defn split
   [strings]
@@ -31,7 +23,7 @@
   [strings]
   (->> strings
        (split)
-       (map string-to-integer)
+       (map parse-int)
        (reduce +)))
 
 (defn last-element-plus-nth-integer
