@@ -41,14 +41,14 @@
   (+ (or (last elements) 0) (nth integers index) ))
 
 (defn accumulation-reached-again-first
-  [accumulations integers index]
+  [accumulations index integers]
   (let [value-added (last-element-plus-nth-integer accumulations integers index)]
     (if (.contains accumulations value-added)
       value-added
       (recur
         (conj accumulations value-added)
-        integers
-        (rem (+ index 1) (count integers)))
+        (rem (+ index 1) (count integers))
+        integers)
       )
     )
   )
@@ -59,4 +59,4 @@
   (->> (get-file "2018_01_input.txt")
        (split)
        (map string-to-integer)
-       (#(accumulation-reached-again-first [] % 0))))
+       (accumulation-reached-again-first [] 0)))
