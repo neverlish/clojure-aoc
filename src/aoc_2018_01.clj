@@ -8,7 +8,7 @@
 
 (defn last-element-plus-nth-integer
   [elements integers index]
-  (+ (or (last elements) 0) (nth integers index)))
+  (+ (or (peek elements) 0) (nth integers index)))
 
 (defn accumulation-reached-again-first
   [accumulations index integers]
@@ -29,5 +29,5 @@
        (reduce +))
   (->> (util/get-file "2018_01_input.txt")
        (clojure.string/split-lines)
-       (map string-to-integer)
+       (map parse-int)
        (accumulation-reached-again-first [] 0)))
