@@ -1,6 +1,6 @@
 (ns aoc_2018_02)
 
-(defn is-key-2-or-3?
+(defn key-2-or-3?
   "hashset의 key가 2 혹은 3인지 검사한다."
   [[k v]]
   (contains? #{2 3} k))
@@ -16,7 +16,7 @@
   (->> row
        frequencies
        (group-by val)
-       (filter is-key-2-or-3?)
+       (filter key-2-or-3?)
        keys))
 
 (defn frequencies-multiplied
