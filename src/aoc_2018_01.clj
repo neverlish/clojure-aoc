@@ -1,13 +1,6 @@
 ; solves https://adventofcode.com/2018/day/1
 
-(ns aoc_2018_01
-  (:require [clojure.java.io :as io]))
-
-(defn get-file
-  [filename]
-  (->> filename
-       (io/resource)
-       (slurp)))
+(ns aoc_2018_01)
 
 (defn parse-int
   [string]
@@ -34,11 +27,11 @@
 
 
 (comment
-  (->> (get-file "2018_01_input.txt")
-      (split)
-      (map parse-int)
-      (reduce +))
-  (->> (get-file "2018_01_input.txt")
+  (->> (util/get-file "2018_01_input.txt")
+       (split)
+       (map parse-int)
+       (reduce +))
+  (->> (util/get-file "2018_01_input.txt")
        (split)
        (map string-to-integer)
        (accumulation-reached-again-first [] 0)))
