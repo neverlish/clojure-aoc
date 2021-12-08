@@ -1,8 +1,7 @@
 ; solves https://adventofcode.com/2018/day/1
 
 (ns aoc_2018_01
-  (:require [clojure.string :as str]
-            [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]))
 
 (defn get-file
   [filename]
@@ -17,7 +16,7 @@
 
 (defn split
   [strings]
-  (str/split strings #"(\n)|(, )"))
+  (clojure.string/split-lines strings))
 
 (defn last-element-plus-nth-integer
   [elements integers index]
