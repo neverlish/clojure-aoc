@@ -6,13 +6,13 @@
   [string]
   (Integer/parseInt string))
 
-(defn last-element-plus-nth-integer
-  [elements integers index]
-  (+ (or (peek elements) 0) (nth integers index)))
+(defn peek-element
+  [elements]
+  (or (peek elements) 0))
 
 (defn accumulation-reached-again-first
   [accumulations index integers]
-  (let [value-added (last-element-plus-nth-integer accumulations integers index)]
+  (let [value-added (+ (peek-element accumulations) (nth integers index))]
     (if (some #{value-added} accumulations)
       value-added
       (recur
