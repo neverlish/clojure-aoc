@@ -6,7 +6,6 @@
 (defn get-file
   [filename]
   (->> filename
-       (str "file/")
        (io/resource)
        (slurp)))
 
