@@ -1,6 +1,5 @@
 (ns aoc_2018_02
-  (:require util
-            [clojure.string :as s]))
+  (:require util))
 
 (defn key-2-or-3?
   "hashset의 key가 2 혹은 3인지 검사한다."
@@ -32,17 +31,10 @@
 (defn common-chars-compare
   "두 문자열의 벡터를 받아, 같은 위치의 문자가 같은 문자들을 반환한다."
   [chars1 chars2]
-  (reduce-kv
-    (fn [result index char]
-      (if (= char (nth chars2 index))
-         (str result char)
-         result))
-    ""
-    chars1))
-
-(defn split-into-chars
-  [word]
-  (s/split word #""))
+  (->> (map vector chars1 chars2)
+       (filter (fn [[a b]] (= a b)))
+       (map first)
+       (apply str)))
 
 (defn get-longer
   [a b]
@@ -54,7 +46,7 @@
   [comparer rows]
   (reduce
     (fn [result word]
-      (let [compared (common-chars-compare (split-into-chars comparer) (split-into-chars word))]
+      (let [compared (common-chars-compare comparer word)]
         (get-longer compared result)))
     ""
     rows))
