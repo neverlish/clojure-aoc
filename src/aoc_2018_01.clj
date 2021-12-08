@@ -13,7 +13,7 @@
 (defn accumulation-reached-again-first
   [accumulations index integers]
   (let [value-added (last-element-plus-nth-integer accumulations integers index)]
-    (if (.contains accumulations value-added)
+    (if (some #{value-added} accumulations)
       value-added
       (recur
         (conj accumulations value-added)
