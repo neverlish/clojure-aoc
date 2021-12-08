@@ -1,4 +1,6 @@
-(ns aoc_2018_02)
+(ns aoc_2018_02
+  (:require util
+            [clojure.string :as s]))
 
 (defn key-2-or-3?
   "hashset의 key가 2 혹은 3인지 검사한다."
@@ -40,7 +42,7 @@
 
 (defn split-into-chars
   [word]
-  (clojure.string/split word #""))
+  (s/split word #""))
 
 (defn get-longer
   [a b]
