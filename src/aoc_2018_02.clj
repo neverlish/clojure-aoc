@@ -14,17 +14,17 @@
   를 반환한다."
   [row]
   (->> row
-       (frequencies)
+       frequencies
        (group-by val)
        (filter is-key-2-or-3?)
-       (keys)))
+       keys))
 
 (defn frequencies-multiplied
   "sequence 내부 요소들의 빈도수를 확인후 모두 곱한다."
   [elements]
   (->> elements
-       (frequencies)
-       (vals)
+       frequencies
+       vals
        (reduce *)))
 
 (defn common-chars-compare
@@ -69,10 +69,10 @@
 
 (comment
   (->> (util/get-file "2018_02_input.txt")
-       (clojure.string/split-lines)
+       clojure.string/split-lines
        (map chars-occured-2_3-counted)
-       (flatten)
-       (frequencies-multiplied))
+       flatten
+       frequencies-multiplied)
   (->> (util/get-file "2018_02_input.txt")
-       (clojure.string/split-lines)
-       (most-common-chars-in-rows)))
+       clojure.string/split-lines
+       most-common-chars-in-rows))
