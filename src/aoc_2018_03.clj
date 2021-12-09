@@ -56,16 +56,6 @@
        (> (square :end-x) x)
        (> (square :end-y) y)))
 
-(defn filter-claimed-within
-  "사각형들의 배열과 x y 좌표정보를 받아, x/y 좌표가 속한 사각형들의 배열을 반환한다..
-  입력예시:
-    square: ({:start-x 1, :start-y 3, :end-x 5, :end-y 7} {:start-x 3, :start-y 1, :end-x 7, :end-y 5})
-    x: 2
-    y: 2
-  출력예시: ({:start-x 1, :start-y 3, :end-x 5, :end-y 7})"
-  [squares x y]
-  (filter (fn [square] (coordinate-within-square? x y square)) squares))
-
 (defn squares-id-not-overlapped
   [squares]
   (case (count squares)
@@ -79,7 +69,9 @@
   (fn [{entire :entire squares :squares}]
     (for [x (range (entire :x))
           y (range (entire :y))]
-      (format (filter-claimed-within squares x y)))))
+      (->> squares
+           (filter #(coordinate-within-square? x y %))
+           format))))
 
 (defn square-area
   "사각형 정보를 받으면, 면적 정보를 추가하여 반환한다.
