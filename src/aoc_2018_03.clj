@@ -26,14 +26,6 @@
        (map #(Integer/parseInt %))
        square-coordinates))
 
-(defn entire-coordinates
-  "사각형들의 배열을 받아, 가장 큰 end-x/end-y 값이 담긴 정보를 추가로 덧붙인다.
-  입력예시: ({:start-x 1, :start-y 3, :end-x 5, :end-y 7} {:start-x 3, :start-y 1, :end-x 7, :end-y 5})
-  출력예시: {:entire {:x 7 :y 7} :squares: ({:start-x 1, :start-y 3, :end-x 5, :end-y 7} {:start-x 3, :start-y 1, :end-x 7, :end-y 5})}"
-  [squares]
-  {:x (->> squares (map :end-x) (apply max))
-   :y (->> squares (map :end-y) (apply max))})
-
 (defn coordinate-within-square?
   "좌표 사각형 정보와 x y 값이 주어지면, x y 가 사각형 안에 속하는지 판단한다.
   입력예시:
@@ -58,12 +50,11 @@
   "사각형들의 배열 정보를 받아, 사각형들의 좌표평면 내에서의 위치정보 등을 활용한 고차함수를 실행한다."
   [format]
   (fn [squares]
-    (let [entire (entire-coordinates squares)]
-      (for [x (range (entire :x))
-            y (range (entire :y))]
-        (->> squares
-           (filter #(coordinate-within-square? x y %))
-           format)))))
+    (for [x (->> squares (map :end-x) (apply max) range)
+          y (->> squares (map :end-x) (apply max) range)]
+      (->> squares
+         (filter #(coordinate-within-square? x y %))
+         format))))
 
 (defn squares-id-not-overlapped-frequencies
   "사각형 배열의 정보를 입력받으면, 겹치지 않는 사각형들의 좌표별 id 출현횟수를 반환한다.
