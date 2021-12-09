@@ -25,22 +25,13 @@
        (map #(Integer/parseInt %))
        square-coordinates))
 
-(defn max-val
-  "hash-map의 배열 에서, 특정 키의 최고값을 반환한다.
-  입력예시:
-    rows: ({:start-x 1, :start-y 3, :end-x 5, :end-y 7} {:start-x 3, :start-y 1, :end-x 7, :end-y 5})
-    k: :start-x
-  출력예시: 3"
-  [rows k]
-  (get (apply max-key k rows) k))
-
-
 (defn entire-coordinates
   "사각형들의 배열을 받아, 가장 큰 end-x/end-y 값이 담긴 정보를 추가로 덧붙인다.
   입력예시: ({:start-x 1, :start-y 3, :end-x 5, :end-y 7} {:start-x 3, :start-y 1, :end-x 7, :end-y 5})
   출력예시: {:entire {:x 7 :y 7} :squares: ({:start-x 1, :start-y 3, :end-x 5, :end-y 7} {:start-x 3, :start-y 1, :end-x 7, :end-y 5})}"
   [squares]
-  {:entire  {:x (max-val squares :end-x) :y (max-val squares :end-y)}
+  {:entire  {:x (->> squares (map :end-x) (apply max))
+             :y (->> squares (map :end-y) (apply max))}
    :squares squares})
 
 (defn coordinate-within-square?
