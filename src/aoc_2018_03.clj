@@ -64,14 +64,13 @@
            (filter #(coordinate-within-square? x y %))
            format))))
 
-(defn square-area
+(defn area
   "사각형 정보를 받으면, 면적 정보를 추가하여 반환한다.
   입력예시: {:start-x 1, :start-y 3, :end-x 5, :end-y 7}
-  출력예시: {:start-x 1, :start-y 3, :end-x 5, :end-y 7 :area 16}"
+  출력예시: 16"
   [square]
-  (let [area (* (- (square :end-x) (square :start-x))
-                (- (square :end-y) (square :start-y)))]
-    (assoc square :area area)))
+  (* (- (square :end-x) (square :start-x))
+     (- (square :end-y) (square :start-y))))
 
 (defn squares-id-not-overlapped-frequencies
   "사각형 배열의 정보를 입력받으면, 겹치지 않는 사각형들의 좌표별 id 출현횟수를 반환한다.
@@ -82,20 +81,12 @@
        ((claims-formatted squares-id-not-overlapped))
        frequencies))
 
-(defn filter-area-same-frequencies
-  "areas 에서의 면적 정보와, freq에서 id에 해당하는 빈도수가 같은 areas들만 반환한다."
-  [areas freqs]
-  (filter
-    (fn [{area :area id :id}]
-      (= area (get freqs id)))
-    areas))
-
 (defn squares-not-overlapped
   "사각형 중 다른 사각형의 침범을 받지 않은 사각형들만 반환한다."
-  [squres-and-entire]
-  (let [square-not-overlapped-frequencies (squares-id-not-overlapped-frequencies squres-and-entire)
-        areas (map square-area (squres-and-entire :squares))]
-    (filter-area-same-frequencies areas square-not-overlapped-frequencies)))
+  [squares-and-entire]
+  (let [freqs (squares-id-not-overlapped-frequencies squares-and-entire)]
+    (->> (squares-and-entire :squares)
+         (filter (fn [square] (= (area square) (get freqs (square :id))))))))
 
 (comment
   (->> "2018_03_input.txt"
