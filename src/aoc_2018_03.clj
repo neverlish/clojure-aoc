@@ -5,14 +5,14 @@
 (defn square-coordinates
   "int 의 vector가 입력되면, 의미를 가지는 hash-map으로 변환한다.
   주의: end-x 와 end-y 는 exclusive 하다.
-  입력예시: [1 3 4 4]
-  출력예시: {:start-x 1 :start-y 3 :end-x 5 :end-y 7}"
-  [row]
-  {:id (nth row 0)
-   :start-x (nth row 1)
-   :start-y (nth row 2)
-   :end-x (+ (nth row 1) (nth row 3))
-   :end-y (+ (nth row 2) (nth row 4))})
+  입력예시: [1 1 3 4 4]
+  출력예시: {:id 1 :start-x 1 :start-y 3 :end-x 5 :end-y 7}"
+  [[id x1 y1 x2 y2]]
+  {:id      id
+   :start-x x1
+   :start-y y1
+   :end-x   (+ x1 x2)
+   :end-y   (+ y1 y2)})
 
 (defn row-to-coordinate
   "#1 @ 1,3: 4x4 와 같은 좌표정보가 들어오면, 좌표정보 좌상단 점과 우하단 점을 확인할 수 있는 hash-map을 반환한다.
@@ -57,7 +57,7 @@
 (defn claims-formatted
   "사각형들의 배열 정보를 받아, 사각형들의 좌표평면 내에서의 위치정보 등을 활용한 고차함수를 실행한다."
   [format]
-  (fn [{entire :entire squares :squares}]
+  (fn [{:keys [entire squares]}]
     (for [x (range (entire :x))
           y (range (entire :y))]
       (->> squares
