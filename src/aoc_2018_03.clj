@@ -69,8 +69,7 @@
   "사각형 중 다른 사각형의 침범을 받지 않은 사각형들만 반환한다."
   [squares]
   (let [freqs (squares-id-not-overlapped-frequencies squares)]
-    (->> squares
-         (filter (fn [{:keys [area id]}] (= area (get freqs id)))))))
+    (filter #(= (:area %) (get freqs (:id %))) squares)))
 
 (comment
   (->> "2018_03_input.txt"
