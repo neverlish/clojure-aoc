@@ -66,6 +66,13 @@
   [squares x y]
   (filter (fn [square] (coordinate-within-square? x y square)) squares))
 
+(defn squares-id-not-overlapped
+  [squares]
+  (case (count squares)
+    1 (get (first squares) :id)
+    0 :none
+    :over-one))
+
 (defn claims-formatted
   "사각형들의 배열 정보를 받아, 사각형들의 좌표평면 내에서의 위치정보 등을 활용한 고차함수를 실행한다."
   [format]
@@ -73,6 +80,39 @@
     (for [x (range (entire :x))
           y (range (entire :y))]
       (format (filter-claimed-within squares x y)))))
+
+(defn square-area
+  "사각형 정보를 받으면, 면적 정보를 추가하여 반환한다.
+  입력예시: {:start-x 1, :start-y 3, :end-x 5, :end-y 7}
+  출력예시: {:start-x 1, :start-y 3, :end-x 5, :end-y 7 :area 16}"
+  [square]
+  (let [area (* (- (square :end-x) (square :start-x))
+                (- (square :end-y) (square :start-y)))]
+    (assoc square :area area)))
+
+(defn squares-id-not-overlapped-frequencies
+  "사각형 배열의 정보를 입력받으면, 겹치지 않는 사각형들의 좌표별 id 출현횟수를 반환한다.
+  입력예시: {:entire {:x 7 :y 7} :squares '({:id 1 :start-x 1, :start-y 3, :end-x 5, :end-y 7} {:id 2 :start-x 3, :start-y 1, :end-x 7, :end-y 5})}
+  출력예시: {:none 21, 1 12, 2 12, :over-one 4}"
+  [squres-and-entire]
+  (->> squres-and-entire
+       ((claims-formatted squares-id-not-overlapped))
+       frequencies))
+
+(defn filter-area-same-frequencies
+  "areas 에서의 면적 정보와, freq에서 id에 해당하는 빈도수가 같은 areas들만 반환한다."
+  [areas freqs]
+  (filter
+    (fn [{area :area id :id}]
+      (= area (get freqs id)))
+    areas))
+
+(defn squares-not-overlapped
+  "사각형 중 다른 사각형의 침범을 받지 않은 사각형들만 반환한다."
+  [squres-and-entire]
+  (let [square-not-overlapped-frequencies (squares-id-not-overlapped-frequencies squres-and-entire)
+        areas (map square-area (squres-and-entire :squares))]
+    (filter-area-same-frequencies areas square-not-overlapped-frequencies)))
 
 (comment
   (->> "2018_03_input.txt"
@@ -82,5 +122,10 @@
        entire-coordinates
        ((claims-formatted count))
        (filter #(> % 1))
-       count))
-
+       count)
+  (->> "2018_03_input.txt"
+       util/get-file
+       s/split-lines
+       (map row-to-coordinate)
+       entire-coordinates
+       squares-not-overlapped))
