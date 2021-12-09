@@ -73,14 +73,12 @@
 
 (comment
   (->> "2018_03_input.txt"
-       util/get-file
-       s/split-lines
+       util/read-file-line
        (map row-to-coordinate)
        ((claims-formatted count))
        (filter #(> % 1))
        count)
   (->> "2018_03_input.txt"
-       util/get-file
-       s/split-lines
+       util/read-file-line
        (map row-to-coordinate)
        squares-not-overlapped))
