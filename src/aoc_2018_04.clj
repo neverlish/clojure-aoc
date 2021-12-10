@@ -14,7 +14,7 @@
     :minute : 분 정도
     :guard-id : 문자열이 Guard 정보면 guard의 id를, 그렇지 않다면 nil을 입력한다.
 
-  입력예시: [1518-06-03 00:00] Guard #659 begins shift
+  입력예시: [1518-06-03 00:03] Guard #659 begins shift
   출력예시: {:minute 03 :guard-id 659}"
   [row]
   (->> row
@@ -22,10 +22,10 @@
        row-to-data))
 
 (defn guard-row-indices
-  "문자열들을 여러줄 입력받아, Guard 정보가 담긴 줄의 줄수들만 반환한다.
+  "문자열들을 여러줄 입력받아, guard-id 별로 group된 2중 벡터를 반환한다.
 
   입력예시: [1518-06-03 00:00] Guard #659 begins shift\n[1518-10-03 00:35] wakes up\n[1518-04-30 00:20] wakes up\n[1518-10-15 23:59] Guard #1699 begins shift\n[1518-06-07 00:39] wakes up\n[1518-09-25 00:10] falls asleep
-  출력예시: [0 3]"
+  출력예시: [[0 1 2] [3 4 5]]"
   [rows]
   (->> rows
        (map #(vector %1 %2) (range (count rows)))
@@ -46,6 +46,7 @@
 
 
 (defn transform-group
+  "guard 의 정보가 담긴 문자열 벡터를 받아서, 유의미한 정보를 가진 map으로 반환한다."
   [group]
   {:guard-id ((first group) :guard-id)
    :minutes (->> group
