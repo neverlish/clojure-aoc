@@ -83,6 +83,13 @@
        (sort-by val)
        last))
 
+(defn slept-most-overlapping-guard
+  "guard-id와 분정보가 담긴 리스트의 벡터를 받아, 가장 많이 같은 분에 잠을 잔 가드를 반환한다."
+  [chunks]
+  (->> chunks
+       (sort-by #(->> % last most-frequent-minute last))
+       last))
+
 (defn multiplied-guard-id-and-most-frequent-minute
   "guard-id와 분정보의 리스트 담긴 벡터를 받아, guard-id와 최빈분을 곱한 값을 반환한다.
 
@@ -98,4 +105,11 @@
        (map parse-row)
        group-by-guard-id
        slept-longest-guard
+       multiplied-guard-id-and-most-frequent-minute)
+  (->> "2018_04_input.txt"
+       util/read-file-line
+       sort
+       (map parse-row)
+       group-by-guard-id
+       slept-most-overlapping-guard
        multiplied-guard-id-and-most-frequent-minute))
