@@ -91,18 +91,19 @@
   [[guard-id minutes]]
   (* guard-id (first (most-frequent-minute minutes))))
 
-(comment
+(defn parsed-file
+  []
   (->> "2018_04_input.txt"
        util/read-file-line
        sort
-       (map parse-row)
+       (map parse-row)))
+
+(comment
+  (->> (parsed-file)
        group-by-guard-id
        ((guard-sorted-last #(->> % last (map :minutes) flatten count)))
        multiplied-guard-id-and-most-frequent-minute)
-  (->> "2018_04_input.txt"
-       util/read-file-line
-       sort
-       (map parse-row)
+  (->> (parsed-file)
        group-by-guard-id
        ((guard-sorted-last #(->> % last most-frequent-minute last)))
        multiplied-guard-id-and-most-frequent-minute))
