@@ -2,12 +2,6 @@
   (:require util
             [clojure.string :as s]))
 
-(defn row-to-data
-  "문자열의 배열을 입력받아, 가공하여 반환한다."
-  [[_ _ _ _ _ minute info1 info2]]
-  {:minute (Integer/parseInt minute)
-   :guard-id (if (= info1 "Guard") (Integer/parseInt (subs info2 1)))})
-
 (defn parse-row
   "시간과 정보가 담긴 문자열이 들어오면, 가공하여 반환한다.
   정보:
@@ -17,9 +11,9 @@
   입력예시: [1518-06-03 00:03] Guard #659 begins shift
   출력예시: {:minute 03 :guard-id 659}"
   [row]
-  (->> row
-       (#(s/split % #"\[|] |-|:| "))
-       row-to-data))
+  (let [[_ minute _ guard_id] (re-find #":(\d{2})] (Guard #(\d+))?" row)]
+    {:minute (Integer/parseInt minute)
+     :guard-id (if guard_id (Integer/parseInt guard_id))}))
 
 (defn guard-row-indices
   "문자열들을 여러줄 입력받아, guard-id 별로 group된 2중 벡터를 반환한다.
