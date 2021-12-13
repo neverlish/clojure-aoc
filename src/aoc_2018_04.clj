@@ -49,12 +49,16 @@
                  (map minutes-to-range)
                  flatten)})
 
+(defn rows-by-indices
+  [rows indices]
+  (map (fn [int] (nth rows int)) indices))
+
 (defn group-by-guard-id
   "문자열을 입력받아, 줄별로 파싱한 이후, guard-id 별로 정보들을 그루핑한다."
   [rows]
   (->> rows
        guard-row-indices
-       (map #(map (fn [int] (nth rows int)) %))
+       (map #(rows-by-indices rows %))
        (map transform-group)
        (group-by :guard-id)))
 
