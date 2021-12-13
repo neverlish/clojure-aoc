@@ -31,7 +31,40 @@
        grouped
        (map parse-row)))
 
+(defn int-in-range?
+  "특정 숫자가 특정 범위 안에 있는지 검사한다."
+  [i start end]
+  (let [parsed (Integer/parseInt i)]
+    (and (>= parsed start)
+         (<= parsed end))))
+
+(defn unit-int-in-range?
+  "단위와 값이 함께 담긴 값을 받아, 단위별 유효범위 내에 있는지 검사한다."
+  [v]
+  (let [[_ i unit] (re-find #"(\d+)(cm|in)" v)]
+    (case unit
+      "cm" (int-in-range? i 150 193)
+      "in" (int-in-range? i 59 76)
+      false)))
+
+(defn keyvalue-condition-passed?
+  "키와 밸류를 받아, 키에 해당하는 밸류의 유효성을 검사한다."
+  [[k v]]
+  (case k
+    :byr (int-in-range? v 1920 2002)
+    :iyr (int-in-range? v 2010 2020)
+    :eyr (int-in-range? v 2020 2030)
+    :hgt (unit-int-in-range? v)
+    :hcl (re-matches #"\#[0-9a-f]{6}" v)
+    :ecl (contains? #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} v)
+    :pid (re-matches #"\d{9}" v)
+    :cid true))
+
 (comment
   (->> (parsed-file)
        (filter #(every? % (set keys-required)))
+       count)
+  (->> (parsed-file)
+       (filter #(every? % (set keys-required)))
+       (filter #(every? keyvalue-condition-passed? %))
        count))
