@@ -62,9 +62,9 @@
   (let [[max-x max-y] (max-dot-coordinate coords)]
     (->> coords
          (group-by :type)
-         (filter (fn [[k v]]
-                   (not (= k :duplicated))
-                   (not (some #(on-border? % max-x max-y) v)))))))
+         (remove (fn [[k v]]
+                   (or (= k :duplicated)
+                       (some #(on-border? % max-x max-y) v)))))))
 
 (defn most-frequent-idx-count
   "좌표가 key, 좌표배열이 value인 map을 입력받아,
