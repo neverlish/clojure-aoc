@@ -1,6 +1,7 @@
 (ns aoc_2020_04
   (:require util
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [clojure.spec.alpha :as spec]))
 
 (def keys-required #{:byr :iyr :eyr :hgt :hcl :ecl :pid})
 
@@ -46,24 +47,21 @@
       "in" (int-in-range? i 59 76)
       false)))
 
-(defn keyvalue-condition-passed?
-  "키와 밸류를 받아, 키에 해당하는 밸류의 유효성을 검사한다."
-  [[k v]]
-  (case k
-    :byr (int-in-range? v 1920 2002)
-    :iyr (int-in-range? v 2010 2020)
-    :eyr (int-in-range? v 2020 2030)
-    :hgt (unit-int-in-range? v)
-    :hcl (re-matches #"\#[0-9a-f]{6}" v)
-    :ecl (contains? #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} v)
-    :pid (re-matches #"\d{9}" v)
-    :cid true))
+(spec/def :passport/byr #(int-in-range? % 1920 2002))
+(spec/def :passport/iyr #(int-in-range? % 2010 2020))
+(spec/def :passport/eyr #(int-in-range? % 2020 2030))
+(spec/def :passport/hgt #(unit-int-in-range? %))
+(spec/def :passport/hcl #(re-matches #"\#[0-9a-f]{6}" %))
+(spec/def :passport/ecl #(contains? #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} %))
+(spec/def :passport/pid #(re-matches #"\d{9}" %))
+
+(spec/def :passport/valid (spec/keys :req-un [:passport/byr :passport/iyr :passport/eyr :passport/hgt :passport/hcl :passport/ecl :passport/pid]
+                                     :opt-un [:passport/cid]))
 
 (comment
   (->> (parsed-file)
        (filter #(every? % keys-required))
        count)
   (->> (parsed-file)
-       (filter #(every? % keys-required))
-       (filter #(every? keyvalue-condition-passed? %))
+       (filter #(spec/valid? :passport/valid %))
        count))
