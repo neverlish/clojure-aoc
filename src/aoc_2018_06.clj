@@ -23,11 +23,11 @@
   (+ (Math/abs(- target-x self-x))
      (Math/abs(- self-y target-y))))
 
-(defn on-border?
-  "좌표가 평면의 경계선 위에 있는지 확인한다."
-  [self max-x max-y]
-  (or (contains? #{0 max-x} (self :x))
-      (contains? #{0 max-y} (self :y))))
+(defn within-border?
+  "좌표가 평면의 경계선 내부에 있는지 확인한다."
+  [self min-x min-y max-x max-y]
+  (and (< min-x (self :x) max-x)
+       (< min-y (self :y) max-y)))
 
 (defn dot-type-closest-idx
   "좌표와 근접좌표 배열을 받아,
@@ -46,6 +46,11 @@
   [(->> coords (map :x) (apply max))
    (->> coords (map :y) (apply max))])
 
+(defn min-dot-coordinate
+  [coords]
+  [(->> coords (map :x) (apply min))
+   (->> coords (map :y) (apply min))])
+
 (defn dots-marked-closest-index
   "좌표배열을 받아 평면을 생성후, 평면 내부의 점 별로 최근접좌표 정보를 붙여 반환한다."
   [coords]
@@ -59,12 +64,13 @@
 (defn valid-coords
   "점이 담긴 배열 중, 최근접좌표가 중복되지 않고, 경계선에 있지 않은 점들만 반환한다."
   [coords]
-  (let [[max-x max-y] (max-dot-coordinate coords)]
+  (let [[max-x max-y] (max-dot-coordinate coords)
+        [min-x min-y] (min-dot-coordinate coords)]
     (->> coords
          (group-by :type)
-         (remove (fn [[k v]]
-                   (or (= k :duplicated)
-                       (some #(on-border? % max-x max-y) v)))))))
+         (filter (fn [[k v]]
+                   (and (not= k :duplicated)
+                        (every? #(within-border? % min-x min-y max-x max-y) v)))))))
 
 (defn most-frequent-idx-count
   "좌표가 key, 좌표배열이 value인 map을 입력받아,
