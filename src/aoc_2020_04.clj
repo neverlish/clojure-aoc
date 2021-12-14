@@ -2,7 +2,7 @@
   (:require util
             [clojure.string :as s]))
 
-(def keys-required [:byr :iyr :eyr :hgt :hcl :ecl :pid])
+(def keys-required #{:byr :iyr :eyr :hgt :hcl :ecl :pid})
 
 (defn grouped
   "문자열을 여러 줄 받아서, 빈 행을 기준으로 잘라서 묶는다."
@@ -61,9 +61,9 @@
 
 (comment
   (->> (parsed-file)
-       (filter #(every? % (set keys-required)))
+       (filter #(every? % keys-required))
        count)
   (->> (parsed-file)
-       (filter #(every? % (set keys-required)))
+       (filter #(every? % keys-required))
        (filter #(every? keyvalue-condition-passed? %))
        count))
