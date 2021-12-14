@@ -35,8 +35,7 @@
   "특정 숫자가 특정 범위 안에 있는지 검사한다."
   [i start end]
   (let [parsed (Integer/parseInt i)]
-    (and (>= parsed start)
-         (<= parsed end))))
+    (<= start parsed end)))
 
 (defn unit-int-in-range?
   "단위와 값이 함께 담긴 값을 받아, 단위별 유효범위 내에 있는지 검사한다."
