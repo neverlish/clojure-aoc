@@ -57,7 +57,7 @@
 
 (comment
   (->> (parsed-input)
-       (#(removed-adjacent-insentively-same (char-couples) %))
+       (removed-adjacent-insentively-same (char-couples))
        count)
   (->> (parsed-input)
        counted-per-char-removed-adjacent-insentively-same
