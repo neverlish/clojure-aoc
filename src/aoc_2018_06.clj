@@ -76,8 +76,22 @@
        sort
        last))
 
+(defn distance-summed-per-dots
+  "좌표정보를 이용하여 평면을 생성후, 평면 상의 점 별로 좌표와의 거리합을 구한다."
+  [coords]
+  (let [[max-x max-y] (all-dots coords)]
+    (for [x (range 0 (inc max-x))
+          y (range 0 (inc max-y))]
+      (->> coords
+           (map #(distance {:x x :y y} %))
+           (apply +)))))
+
 (comment
   (->> (data)
        dots-marked-closest-index
        valid-coords
-       most-frequent-idx-count))
+       most-frequent-idx-count)
+  (->> (data)
+       distance-summed-per-dots
+       (filter #(> 10000 %))
+       count))
