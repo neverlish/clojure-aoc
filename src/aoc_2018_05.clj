@@ -26,7 +26,7 @@
        (map char-set)
        (apply concat)))
 
-(defn removed-adjacent-insentively-same
+(defn removed-adjacent-insensitively-same
   "삭제대상(문자열의 벡터)과 문자열을 입력하면, 문자열 내에서 근접한 두 문자가 삭제대상과 같은 경우가 없을 때까지 계속해서 삭제한다.
 
   입력예시: [aA Aa cC Cc] dabAcCaCBAcCcaDA
@@ -36,7 +36,7 @@
     (recur to-deletes (s/replace target to-remove ""))
     target))
 
-(defn string-char-removed-and-adjacent-insentively-same-count
+(defn string-char-removed-and-adjacent-insensitively-same-count
   "입력받은 문자열에서 알파벳에 해당하는 글자들을 지우고, 근접한 두 문자 같은 것들을 제거한 글자의 글자수를 반환한다.
 
   입력예시: qwEeaAb e
@@ -48,19 +48,19 @@
         (removed-adjacent-insentively-same comparator)
         count))
 
-(defn counted-per-char-removed-adjacent-insentively-same
+(defn counted-per-char-removed-adjacent-insensitively-same
   "입력받은 문자열에서 알파벳을 하나씩 빼고 근접한 두 문자가 같은 알파벳을 제거한 후의 길이가 가장 짧은 경우를 반환한다."
   [string]
   (let [comparator (char-couples)]
     (map
-      #(string-char-removed-and-adjacent-insentively-same-count string (first %) comparator)
+      #(string-char-removed-and-adjacent-insensitively-same-count string (first %) comparator)
       comparator)))
 
 (comment
   (->> (parsed-input)
-       (removed-adjacent-insentively-same (char-couples))
+       (removed-adjacent-insensitively-same (char-couples))
        count)
   (->> (parsed-input)
-       counted-per-char-removed-adjacent-insentively-same
+       counted-per-char-removed-adjacent-insensitively-same
        sort
        first))
