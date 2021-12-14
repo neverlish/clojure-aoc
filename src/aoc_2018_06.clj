@@ -40,21 +40,16 @@
                (coord1 :idx))]
       (assoc self :type type)))
 
-(defn max-dot-coordinate
-  "좌표배열을 받아, x와 y의 최고값이 담긴 배열을 반환한다."
-  [coords]
-  [(->> coords (map :x) (apply max))
-   (->> coords (map :y) (apply max))])
-
-(defn min-dot-coordinate
-  [coords]
-  [(->> coords (map :x) (apply min))
-   (->> coords (map :y) (apply min))])
+(defn coordinate-dot-f
+  "좌표배열을 받아, :x와 :y로 특정 함수를 실행한다"
+  [f]
+  (fn [coords]
+    (map #(->> coords (map %) (apply f)) [:x :y])))
 
 (defn dots-marked-closest-index
   "좌표배열을 받아 평면을 생성후, 평면 내부의 점 별로 최근접좌표 정보를 붙여 반환한다."
   [coords]
-  (let [[max-x max-y] (max-dot-coordinate coords)]
+  (let [[max-x max-y] ((coordinate-dot-f max) coords)]
     (for [x (range (inc max-x))
           y (range (inc max-y))]
       (->> coords
@@ -64,8 +59,8 @@
 (defn valid-coords
   "점이 담긴 배열 중, 최근접좌표가 중복되지 않고, 경계선에 있지 않은 점들만 반환한다."
   [coords]
-  (let [[max-x max-y] (max-dot-coordinate coords)
-        [min-x min-y] (min-dot-coordinate coords)]
+  (let [[max-x max-y] ((coordinate-dot-f max) coords)
+        [min-x min-y] ((coordinate-dot-f min) coords)]
     (->> coords
          (group-by :type)
          (filter (fn [[k v]]
@@ -85,7 +80,7 @@
 (defn distance-summed-per-dots
   "좌표정보를 이용하여 평면을 생성후, 평면 상의 점 별로 좌표와의 거리합을 구한다."
   [coords]
-  (let [[max-x max-y] (max-dot-coordinate coords)]
+  (let [[max-x max-y] ((coordinate-dot-f max) coords)]
     (for [x (range (inc max-x))
           y (range (inc max-y))]
       (->> coords
