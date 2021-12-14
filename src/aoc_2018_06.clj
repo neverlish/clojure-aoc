@@ -50,8 +50,8 @@
   "좌표배열을 받아 평면을 생성후, 평면 내부의 점 별로 최근접좌표 정보를 붙여 반환한다."
   [coords]
   (let [[max-x max-y] (max-dot-coordinate coords)]
-    (for [x (range 0 (inc max-x))
-          y (range 0 (inc max-y))]
+    (for [x (range (inc max-x))
+          y (range (inc max-y))]
       (->> coords
            (sort-by #(distance {:x x :y y} %))
            (dot-type-closest-idx {:x x :y y})))))
@@ -80,8 +80,8 @@
   "좌표정보를 이용하여 평면을 생성후, 평면 상의 점 별로 좌표와의 거리합을 구한다."
   [coords]
   (let [[max-x max-y] (max-dot-coordinate coords)]
-    (for [x (range 0 (inc max-x))
-          y (range 0 (inc max-y))]
+    (for [x (range (inc max-x))
+          y (range (inc max-y))]
       (->> coords
            (map #(distance {:x x :y y} %))
            (apply +)))))
