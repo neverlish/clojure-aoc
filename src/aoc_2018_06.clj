@@ -72,7 +72,7 @@
   value의 요소가 가장 긴 것의 길이를 반환한다."
   [coords]
   (->> coords
-       (map #(count (last %)))
+       (map #(count (val %)))
        sort
        last))
 
