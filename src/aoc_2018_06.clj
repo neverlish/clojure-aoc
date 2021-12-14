@@ -79,7 +79,7 @@
 (defn distance-summed-per-dots
   "좌표정보를 이용하여 평면을 생성후, 평면 상의 점 별로 좌표와의 거리합을 구한다."
   [coords]
-  (let [[max-x max-y] (all-dots coords)]
+  (let [[max-x max-y] (max-dot-coordinate coords)]
     (for [x (range 0 (inc max-x))
           y (range 0 (inc max-y))]
       (->> coords
