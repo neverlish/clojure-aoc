@@ -25,9 +25,9 @@
 
 (defn within-border?
   "좌표가 평면의 경계선 내부에 있는지 확인한다."
-  [self min-x min-y max-x max-y]
-  (and (< min-x (self :x) max-x)
-       (< min-y (self :y) max-y)))
+  [{self-x :x self-y :y} min-x min-y max-x max-y]
+  (and (< min-x self-x max-x)
+       (< min-y self-y max-y)))
 
 (defn dot-type-closest-idx
   "좌표와 근접좌표 배열을 받아,
