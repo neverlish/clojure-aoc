@@ -15,8 +15,21 @@
         :when (= 2020 (+ x y))]
     [x y]))
 
+(defn ints-3d-summed-2020
+  "숫자의 벡터를 받아, 숫자의 3 쌍의 합이 2020이 되는 쌍을 찾는다."
+  [ints]
+  (for [x ints
+        y ints
+        z ints
+        :when (= 2020 (+ x y z))]
+    [x y z]))
+
 (comment
   (->> (data)
        (ints-2d-summed-2020)
+       first
+       (apply *))
+  (->> (data)
+       (ints-3d-summed-2020)
        first
        (apply *)))
