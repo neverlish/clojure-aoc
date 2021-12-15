@@ -59,7 +59,12 @@
     (merge row {:op op-changed})))
 
 (defn rows-only-row-reversed-jmp-nop
-  "명령의 벡터를 받아, 명령이 :jmp 혹은 :nop 인 것들의 명령만 하나씩 변경한 2차원 벡터를 반환한다."
+  "명령의 벡터를 받아, 명령이 :jmp 혹은 :nop 인 것들의 명령만 하나씩 변경한 2차원 벡터를 반환한다.
+
+  입력예시: [{:op :jmp :value 1} {:op :acc :value 2} {:op :nop :value -1}]
+  출력예시: [[{:op :nop :value 1} {:op :acc :value 2} {:op :nop :value -1}]
+           [{:op :jmp :value 1} {:op :acc :value 2} {:op :nop :value -1}]
+           [{:op :jmp :value 1} {:op :acc :value 2} {:op :jmp :value -1}]]"
   [rows]
   (map-indexed (fn [index row] (assoc rows index (row-reversed-jmp-nop row))) rows))
 
