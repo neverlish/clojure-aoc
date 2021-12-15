@@ -48,7 +48,34 @@
                (+ result add)
                (conj visited index)
                whole-count)))))
+
+(defn row-reversed-jmp-nop
+  "명령의 :op가 :jmp 혹은 :nop인 경우 반대편으로 변경한다."
+  [row]
+  (let [op-changed (case (row :op)
+                     :jmp :nop
+                     :nop :jmp
+                     :acc :acc)]
+    (merge row {:op op-changed})))
+
+(defn rows-only-row-reversed-jmp-nop
+  "명령의 벡터를 받아, 명령이 :jmp 혹은 :nop 인 것들의 명령만 하나씩 변경한 2차원 벡터를 반환한다."
+  [rows]
+  (map-indexed (fn [index row] (assoc rows index (row-reversed-jmp-nop row))) rows))
+
+(defn row-terminated-by-last-op
+  "명령의 벡터를 받아, 종료조건이 :last-op인 첫번째 명령을 반환한다."
+  [rows]
+  (->> rows
+       (map #(run-operations (cycle %) 0 [] (count %)))
+       (filter #(= (% :termination) :last-op))
+       first))
+
 (comment
   (->> (data)
        (#(run-operations (cycle %) 0 [] (count %)))
+       :result)
+  (->> (data)
+       rows-only-row-reversed-jmp-nop
+       row-terminated-by-last-op
        :result))
