@@ -26,14 +26,20 @@
                        :nop 1)]
     (conj indices (+ index index-to-add))))
 
+(defn can-continue?
+  "벡터와 값을 입력받아, 값이 중복되지 않으면서도 마지막의 이전값이 특정값에 해당하는를 검사한다."
+  [v]
+  (fn [vector]
+    (and (apply distinct? vector)
+         (->> vector (take-last 2) last (not= v)))))
+
 (defn rows-until-condition
   "명령어들을 받은 후, 특정 조건에 해당할 때까지 명령어들을 계속 수행한 결과 명령어들의 수행순서를 반환한다."
-  [until]
-  (fn [rows]
-    (->> (iterate #(append-index-by-last-op rows %) [0])
-         (take-while until)
-         last
-         (map rows))))
+  [rows]
+  (->> (iterate #(append-index-by-last-op rows %) [0])
+       (take-while (can-continue? (count rows)))
+       last
+       (map rows)))
 
 (defn rows-summed-acc
   "명령어의 배열을 받은 후, op가 :acc 인 것들의 :value의 합을 구한다."
@@ -58,25 +64,18 @@
                        :acc :acc)]
       (assoc rows (row :index) (assoc row :op op-changed)))))
 
-(defn can-continue?
-  "벡터와 값을 입력받아, 값이 중복되지 않으면서도 마지막의 이전값이 특정값에 해당하는를 검사한다."
-  [v]
-  (fn [vector]
-    (and (apply distinct? vector)
-         (->> vector (take-last 2) first (not= v)))))
-
 (defn row-terminated-by-last-op
   "명령의 2차원 벡터를 받아, 명령의 모음 중 마지막 명령까지 수행된 모음을 반환한다."
   [rows-2d]
   (let [last-index (->> rows-2d last last :index)]
     (->> rows-2d
-         (map (rows-until-condition (can-continue? last-index)))
+         (map rows-until-condition)
          (filter #(->> % last :index (= last-index)))
          first)))
 
 (comment
   (->> (data)
-       ((rows-until-condition #(apply distinct? %)))
+       rows-until-condition
        rows-summed-acc)
   (->> (data)
        rows-only-row-reversed-jmp-nop
