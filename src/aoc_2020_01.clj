@@ -7,29 +7,32 @@
        util/read-file-line
        (map #(Integer/parseInt %))))
 
-(defn ints-2d-summed-2020
-  "숫자의 벡터를 받아, 숫자의 쌍의 합이 2020이 되는 쌍을 찾는다."
+(defn vectors-int-diff-2d
   [ints]
-  (for [x ints
-        y ints
-        :when (= 2020 (+ x y))]
-    [x y]))
+  (for [v1 ints
+        v2 ints
+        :when (not= v1 v2)]
+    [v1 v2]))
 
-(defn ints-3d-summed-2020
-  "숫자의 벡터를 받아, 숫자의 3 쌍의 합이 2020이 되는 쌍을 찾는다."
+(defn vectors-int-diff-3d
   [ints]
-  (for [x ints
-        y ints
-        z ints
-        :when (= 2020 (+ x y z))]
-    [x y z]))
+  (for [v1 ints
+        [v2 v3] (vectors-int-diff-2d ints)
+        :when (and (not= v1 v2) (not= v1 v3))]
+    [v1 v2 v3]))
+
+(defn row-summed-to-2020
+  [rows]
+  (->> rows
+       (filter #(= (apply + %) 2020))
+       first))
 
 (comment
   (->> (data)
-       (ints-2d-summed-2020)
-       first
+       vectors-int-diff-2d
+       row-summed-to-2020
        (apply *))
   (->> (data)
-       (ints-3d-summed-2020)
-       first
+       vectors-int-diff-3d
+       row-summed-to-2020
        (apply *)))
