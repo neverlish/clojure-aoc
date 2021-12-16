@@ -95,13 +95,21 @@
                        :acc :acc)]
       (assoc rows (row :index) (assoc row :op op-changed)))))
 
+(defn can-continue?
+  "벡터와 값을 입력받아, 값이 중복되지 않으면서도 마지막의 이전값이 특정값에 해당하는를 검사한다."
+  [v]
+  (fn [vector]
+    (and (apply distinct? vector)
+         (->> vector (take-last 2) first (not= v)))))
+
 (defn row-terminated-by-last-op
-  "명령의 벡터를 받아, 종료조건이 :last-op인 첫번째 명령을 반환한다."
-  [rows]
-  (->> rows
-       (map #(run-operations (cycle %) 0 [] (count %)))
-       (filter #(= (% :termination) :last-op))
-       first))
+  "명령의 2차원 벡터를 받아, 명령의 모음 중 마지막 명령까지 수행된 모음을 반환한다."
+  [rows-2d]
+  (let [last-index (->> rows-2d last last :index)]
+    (->> rows-2d
+         (map (rows-until-condition (can-continue? last-index)))
+         (filter #(->> % last :index (= last-index)))
+         first)))
 
 (comment
   (->> (data)
@@ -110,4 +118,4 @@
   (->> (data)
        rows-only-row-reversed-jmp-nop
        row-terminated-by-last-op
-       :result))
+       rows-summed-acc))
