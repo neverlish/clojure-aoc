@@ -14,6 +14,35 @@
        (map-indexed parse-row)
        vec))
 
+(defn append-index-by-last-op
+  "명령어의 벡터와 인덱스의 벡터를 받아,
+  인덱스 벡터의 마지막 인덱스에 해당하는 위치의 명령을 수행한 후,
+  그 명령어의 위치를 인덱스 벡터에 추가한다."
+  [rows indices]
+  (let [{op :op value :value index :index} (rows (peek indices))
+        index-to-add (case op
+                       :acc 1
+                       :jmp value
+                       :nop 1)]
+    (conj indices (+ index index-to-add))))
+
+(defn rows-until-condition
+  "명령어들을 받은 후, 특정 조건에 해당할 때까지 명령어들을 계속 수행한 결과 명령어들의 수행순서를 반환한다."
+  [until]
+  (fn [rows]
+    (->> (iterate #(append-index-by-last-op rows %) [0])
+         (take-while until)
+         last
+         (map rows))))
+
+(defn rows-summed-acc
+  "명령어의 배열을 받은 후, op가 :acc 인 것들의 :value의 합을 구한다."
+  [rows]
+  (->> rows
+       (filter #(= (% :op) :acc))
+       (map :value)
+       (apply +)))
+
 (defn do-operation
   "명령어 와 값들을 받아, 전진수와 더할값을 반환한다."
   [op v whole-count]
@@ -76,8 +105,8 @@
 
 (comment
   (->> (data)
-       (#(run-operations (cycle %) 0 [] (count %)))
-       :result)
+       ((rows-until-condition #(apply distinct? %)))
+       rows-summed-acc)
   (->> (data)
        rows-only-row-reversed-jmp-nop
        row-terminated-by-last-op
