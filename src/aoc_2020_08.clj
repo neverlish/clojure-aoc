@@ -33,7 +33,7 @@
   [visited index whole-count]
   (cond
     (= (last visited) (dec whole-count)) :last-op
-    (.contains visited index) :already
+    (contains? (set visited) index) :already
     :default nil))
 
 (defn run-operations
