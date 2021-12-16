@@ -23,9 +23,10 @@
           :add 0}
     :nop {:step 1 :add 0}))
 
-(defn terminated?
-  "명령의 종결가능 여부를 판단한다.
+(defn reason-terminated
+  "명령의 종료사유를 반한한다.
   마지막 명령일 경우 :last-op 을, 기방문한 명령인 경우 :already를 반환한다.
+  해당하는 조건이 없는 경우 nil을 반환한다.
 
   입력예시: [[0 2 3] 1 4]
   출력예시: :last-op"
@@ -41,7 +42,7 @@
 
   [ops result visited whole-count]
   (let [{op :op value :value index :index} (first ops)
-        termination (terminated? visited index whole-count)]
+        termination (reason-terminated visited index whole-count)]
     (if termination
       {:termination termination :result result}
       (let [{step :step add :add} (do-operation op value whole-count)]
