@@ -38,6 +38,7 @@
 (defn run-operations
   "명령어의 벡터, 결과, 방문여부, 명령어의 전체길이를 입력 받아
   명령의 종료조건과 최종결과를 반환한다."
+
   [ops result visited whole-count]
   (let [{op :op value :value index :index} (first ops)
         termination (terminated? visited index whole-count)]
@@ -49,15 +50,6 @@
                (conj visited index)
                whole-count)))))
 
-(defn row-reversed-jmp-nop
-  "명령의 :op가 :jmp 혹은 :nop인 경우 반대편으로 변경한다."
-  [row]
-  (let [op-changed (case (row :op)
-                     :jmp :nop
-                     :nop :jmp
-                     :acc :acc)]
-    (merge row {:op op-changed})))
-
 (defn rows-only-row-reversed-jmp-nop
   "명령의 벡터를 받아, 명령이 :jmp 혹은 :nop 인 것들의 명령만 하나씩 변경한 2차원 벡터를 반환한다.
 
@@ -66,7 +58,12 @@
            [{:op :jmp :value 1} {:op :acc :value 2} {:op :nop :value -1}]
            [{:op :jmp :value 1} {:op :acc :value 2} {:op :jmp :value -1}]]"
   [rows]
-  (map-indexed (fn [index row] (assoc rows index (row-reversed-jmp-nop row))) rows))
+  (for [row rows]
+    (let [op-changed (case (row :op)
+                       :jmp :nop
+                       :nop :jmp
+                       :acc :acc)]
+      (assoc rows (row :index) (assoc row :op op-changed)))))
 
 (defn row-terminated-by-last-op
   "명령의 벡터를 받아, 종료조건이 :last-op인 첫번째 명령을 반환한다."
