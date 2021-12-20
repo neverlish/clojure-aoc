@@ -5,7 +5,7 @@
 
 (defn data
   []
-  (->> "resources/2020_01_input.txt"
+  (->> "2020_01_input.txt"
        util/read-file-line
        (map #(Integer/parseInt %))))
 

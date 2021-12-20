@@ -5,6 +5,7 @@
 (defn get-file
   [filename]
   (->> filename
+       (str "resources/")
        slurp))
 
 (defn read-file-line
