@@ -1,33 +1,37 @@
 (ns aoc_2020_01
-  (:require util))
+  (:require util
+            [clojure.math.combinatorics :as combo]
+            util))
 
 (defn data
   []
-  (->> "2020_01_input.txt"
+  (->> "resources/2020_01_input.txt"
        util/read-file-line
        (map #(Integer/parseInt %))))
 
-(defn vectors-int-diff-2d
-  [ints]
-  (for [v1 ints
-        v2 ints
-        :when (and (not= v1 v2) (= 2020 (+ v1 v2)))]
-    [v1 v2]))
+(defn all-different-and-summed-2020
+  [args]
+  (cond
+    (not= (count (set args)) (count args)) false
+    (= (apply + args) 2020) true
+    :default false))
 
-(defn vectors-int-diff-3d
-  [ints]
-  (for [v1 ints
-        v2 ints
-        v3 ints
-        :when (and (not= v1 v2 v3) (= 2020 (+ v1 v2 v3)))]
-    [v1 v2 v3]))
+(defn first-row-multiplied
+  [rows]
+  (->> rows
+       first
+       (apply *)))
+
+(defn combi
+  [n rows]
+  (combo/combinations rows n))
 
 (comment
   (->> (data)
-       vectors-int-diff-2d
-       first
-       (apply *))
+       (combi 2)
+       (filter all-different-and-summed-2020)
+       first-row-multiplied)
   (->> (data)
-       vectors-int-diff-3d
-       first
-       (apply *)))
+       (combi 3)
+       (filter all-different-and-summed-2020)
+       first-row-multiplied))

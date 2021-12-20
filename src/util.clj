@@ -5,7 +5,6 @@
 (defn get-file
   [filename]
   (->> filename
-       io/resource
        slurp))
 
 (defn read-file-line
