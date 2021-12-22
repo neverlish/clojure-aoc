@@ -14,32 +14,33 @@
        (map-indexed parse-row)
        vec))
 
-(defn append-index-by-last-op
+(defn append-row-by-last-op
   "명령어의 벡터와 인덱스의 벡터를 받아,
   인덱스 벡터의 마지막 인덱스에 해당하는 위치의 명령을 수행한 후,
   그 명령어의 위치를 인덱스 벡터에 추가한다."
-  [rows indices]
-  (let [{op :op value :value index :index} (rows (peek indices))
+  [rows accs]
+  (let [{op :op value :value index :index} (peek accs)
         index-to-add (case op
-                       :acc 1
-                       :jmp value
-                       :nop 1)]
-    (conj indices (+ index index-to-add))))
+                       :acc (inc index)
+                       :jmp (+ index value)
+                       :nop (inc index))
+        row-to-add (nth rows index-to-add)]
+    (conj accs row-to-add)))
 
 (defn can-continue?
   "벡터와 값을 입력받아, 값이 중복되지 않으면서도 마지막의 이전값이 특정값에 해당하는를 검사한다."
   [v]
   (fn [vector]
     (and (apply distinct? vector)
-         (->> vector (take-last 2) last (not= v)))))
+         (->> vector last :index (not= v)))))
 
-(defn rows-until-condition
-  "명령어들을 받은 후, 특정 조건에 해당할 때까지 명령어들을 계속 수행한 결과 명령어들의 수행순서를 반환한다."
+(defn operated
+  "명령어들을 받은 후, 값이 중복되지 않거나 마지막 명령어가 수행될때까지 명령어들을 계속 수행한 결과 명령어들의 수행순서를 반환한다."
   [rows]
-  (->> (iterate #(append-index-by-last-op rows %) [0])
-       (take-while (can-continue? (count rows)))
-       last
-       (map rows)))
+  (let [max-index (->> rows (map :index) (apply max))]
+    (->> (iterate #(append-row-by-last-op rows %) [(first rows)])
+         (drop-while (can-continue? max-index))
+         first)))
 
 (defn rows-summed-acc
   "명령어의 배열을 받은 후, op가 :acc 인 것들의 :value의 합을 구한다."
@@ -69,13 +70,13 @@
   [rows-2d]
   (let [last-index (->> rows-2d last last :index)]
     (->> rows-2d
-         (map rows-until-condition)
+         (map operated)
          (filter #(->> % last :index (= last-index)))
          first)))
 
 (comment
   (->> (data)
-       rows-until-condition
+       operated
        rows-summed-acc)
   (->> (data)
        rows-only-row-reversed-jmp-nop
