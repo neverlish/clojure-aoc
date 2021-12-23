@@ -90,13 +90,15 @@
      :graphs new-graph}))
 
 (defn prepare
-  [graphs]
-  {:result "" :graphs graphs})
+  [worker-count graphs]
+  {:result ""
+   :graphs graphs
+   :worker-count worker-count})
 
 (comment
   (->> data
        graphed
-       prepare
+       (prepare 1)
        (iterate progress)
        (drop-while #(seq (% :graphs)))
        first
