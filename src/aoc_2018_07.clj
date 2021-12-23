@@ -133,4 +133,12 @@
        (iterate progress)
        (drop-while #(seq (% :graphs)))
        first
-       result))
+       result)
+  (->> data
+       graphed
+       (prepare 5)
+       (iterate progress)
+       (drop-while #(seq (% :graphs)))
+       first
+       :worked-list
+       count))
