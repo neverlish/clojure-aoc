@@ -77,18 +77,19 @@
          (map #(assoc % :prerequisites (remove done-list-self-set (% :prerequisites)))))))
 
 (defn done-candidates
-  [graphs]
+  [graphs worker-count]
   (->> graphs
      (filter #(empty? (% :prerequisites)))
      (sort-by :self)
-     (take 1)))
+     (take worker-count)))
 
 (defn progress
-  [{:keys [result graphs]}]
-  (let [will-done-list (done-candidates graphs)
+  [{:keys [result graphs worker-count]}]
+  (let [will-done-list (done-candidates graphs worker-count)
         new-graph (done-graph graphs will-done-list)]
     {:result (concat result will-done-list)
-     :graphs new-graph}))
+     :graphs new-graph
+     :worker-count worker-count}))
 
 (defn prepare
   [worker-count graphs]
