@@ -54,6 +54,20 @@
     (->> (concat beginnings grouped-next)
          (map append-time))))
 
+(defn decrease-time-if-worked
+  [worked-list graph]
+  (let [worked-set (->> worked-list (map :self) set)]
+    (if (worked-set (graph :self))
+      (update graph :time dec)
+      graph)))
+
+(defn graph-removed-done-workers
+  [graph done-workers]
+  (let [time-done-workers-set (set (map :self done-workers))]
+    (->> graph
+         (remove (set done-workers))
+         (map #(assoc % :prerequisites (remove time-done-workers-set (% :prerequisites)))))))
+
 (defn done-graph
   "그래프목록과 삭제대상을 입력받아,
   그래프 목록에서 삭제대상 자체를 삭제하고, 그래프 내부의 :prerequisites에서도 삭제한다.
@@ -70,11 +84,12 @@
          {:self B, :prerequisites [A]}
          {:self D, :prerequisites [A]}
          {:self E, :prerequisites [B D F]})"
-  [graphs done-list]
-  (let [done-list-self-set (->> done-list (map :self) set)]
-    (->> graphs
-         (remove (set done-list))
-         (map #(assoc % :prerequisites (remove done-list-self-set (% :prerequisites)))))))
+  [workers done-list]
+  (let [workers-passed-time (map #(decrease-time-if-worked done-list %) workers)
+        done-workers (filter #(zero? (% :time)) workers-passed-time)
+        new-graph (graph-removed-done-workers workers-passed-time done-workers)]
+    {:done done-workers
+     :graph new-graph}))
 
 (defn workers-available
   [graphs worker-count worked-list]
@@ -91,8 +106,8 @@
 (defn progress
   [{:keys [result graphs worker-count worked-list]}]
   (let [workers (workers-available graphs worker-count worked-list)
-        new-graph (done-graph graphs workers)]
-    {:result       (concat result workers)
+        {new-graph :graph done-workers :done} (done-graph graphs workers)]
+    {:result       (concat result done-workers)
      :graphs       new-graph
      :worker-count worker-count
      :worked-list  (merge worked-list workers)}))
