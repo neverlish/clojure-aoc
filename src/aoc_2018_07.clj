@@ -53,7 +53,7 @@
     (->> (concat beginnings grouped-next)
          (map append-time))))
 
-(defn graphs-without-targets
+(defn done-graph
   "그래프목록과 삭제대상을 입력받아,
   그래프 목록에서 삭제대상 자체를 삭제하고, 그래프 내부의 :prerequisites에서도 삭제한다.
 
@@ -69,12 +69,11 @@
          {:self B, :prerequisites [A]}
          {:self D, :prerequisites [A]}
          {:self E, :prerequisites [B D F]})"
-  [graphs remove-targets]
-  (let [remove-targets-selfs (->> remove-targets (map :self) set)]
+  [graphs done-list]
+  (let [done-list-self-set (->> done-list (map :self) set)]
     (->> graphs
-         (remove #((set remove-targets) %))
-         (map (fn [graph] (assoc graph :prerequisites (->> (graph :prerequisites)
-                                                           (remove #(remove-targets-selfs %)))))))))
+         (remove (set done-list))
+         (map #(assoc % :prerequisites (remove done-list-self-set (% :prerequisites)))))))
 
 (defn done-candidates
   [graphs]
@@ -85,7 +84,7 @@
 (defn progress
   [{:keys [result graphs]}]
   (let [remove-target (->> graphs done-candidates first)
-        new-graph (graphs-without-targets graphs [remove-target])]
+        new-graph (done-graph graphs [remove-target])]
     {:result (str result (remove-target :self))
      :graphs new-graph}))
 
