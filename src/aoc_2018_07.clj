@@ -1,6 +1,7 @@
 (ns aoc_2018_07
   (:require util
-            [clojure.set :as st]))
+            [clojure.set :as st]
+            [clojure.string :as s]))
 
 (defn parse-line
   [row]
@@ -95,6 +96,13 @@
    :graphs graphs
    :worker-count worker-count})
 
+(defn result
+  [graphs]
+  (->> graphs
+       :result
+       (map :self)
+       s/join))
+
 (comment
   (->> data
        graphed
@@ -102,4 +110,4 @@
        (iterate progress)
        (drop-while #(seq (% :graphs)))
        first
-       :result))
+       result))
