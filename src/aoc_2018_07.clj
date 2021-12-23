@@ -28,7 +28,7 @@
   (let [t (- (int (first (graph :self))) 4)]
     (assoc graph :time t)))
 
-(defn graphed
+(defn ->graph
   ":first와 :next가 담긴 map의 벡터를 입력받아,
   :next가 같은 것들의 그루핑하고, 그룹키는 :self에, 그룹된 값들의 :first의 모음은 :prerequisites에 입력한다.
   :next에 없는 :first는 {:self next, :prerequisites []와 같은 형태로 반환한다.
@@ -151,14 +151,14 @@
 
 (comment
   (->> data
-       graphed
+       ->graph
        (prepare 1)
        (iterate progress)
        (drop-while #(seq (% :graphs)))
        first
        result)
   (->> data
-       graphed
+       ->graph
        (prepare 5)
        (iterate progress)
        (drop-while #(seq (% :graphs)))
