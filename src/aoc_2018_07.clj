@@ -79,18 +79,19 @@
   [graphs]
   (->> graphs
      (filter #(empty? (% :prerequisites)))
-     (sort-by :self)))
+     (sort-by :self)
+     (take 1)))
 
 (defn progress
   [{:keys [result graphs]}]
-  (let [remove-target (->> graphs done-candidates first)
-        new-graph (done-graph graphs [remove-target])]
-    {:result (str result (remove-target :self))
+  (let [will-done-list (done-candidates graphs)
+        new-graph (done-graph graphs will-done-list)]
+    {:result (concat result will-done-list)
      :graphs new-graph}))
 
 (defn prepare
   [worker-count graphs]
-  {:result ""
+  {:result []
    :graphs graphs
    :worker-count worker-count})
 
